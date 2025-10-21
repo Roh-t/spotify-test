@@ -54,35 +54,36 @@ app.get('/spotify/callback', async (req, res) => {
 
 // GET /spotify: Return top 10 tracks and now playing as JSON
 app.get('/spotify', async (req, res) => {
-  try {
-    await refreshAccessToken(); // Ensure token is fresh
-    const [topTracksRes, nowPlayingRes] = await Promise.all([
-      spotifyApi.getMyTopTracks({ limit: 10 }),
-      spotifyApi.getMyCurrentPlayingTrack(),
-    ]);
-    const topTracks = topTracksRes.body.items.map(track => ({
-      id: track.id,
-      name: track.name,
-      artist: track.artists[0].name,
-      uri: track.uri,
-    }));
-    const nowPlaying = nowPlayingRes.body ? {
-      name: nowPlayingRes.body.item.name,
-      artist: nowPlayingRes.body.item.artists[0].name,
-      isPlaying: nowPlayingRes.body.is_playing,
-    } : null;
-    res.json({
-      topTracks,
-      nowPlaying,
-      actions: {
-        pause: 'PUT /spotify/pause',
-        play: 'PUT /spotify/play/{trackId} (replace {trackId} with a track ID from topTracks)',
-      },
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+       try {
+         await refreshAccessToken(); // Ensure token is fresh
+         const [topTracksRes, nowPlayingRes] = await Promise.all([
+           spotifyApi.getMyTopTracks({ limit: 10 }),
+           spotifyApi.getMyCurrentPlayingTrack(),
+         ]);
+         const topTracks = topTracksRes.body.items.map(track => ({
+           id: track.id,
+           name: track.name,
+           artist: track.artists[0].name,
+           uri: track.uri,
+         }));
+         // Updated: Check for body AND item to avoid errors
+         const nowPlaying = (nowPlayingRes.body && nowPlayingRes.body.item) ? {
+           name: nowPlayingRes.body.item.name,
+           artist: nowPlayingRes.body.item.artists[0].name,
+           isPlaying: nowPlayingRes.body.is_playing,
+         } : null;
+         res.json({
+           topTracks,
+           nowPlaying,
+           actions: {
+             pause: 'PUT /spotify/pause',
+             play: 'PUT /spotify/play/{trackId} (replace {trackId} with a track ID from topTracks)',
+           },
+         });
+       } catch (error) {
+         res.status(500).json({ error: error.message });
+       }
+     });
 
 // PUT /spotify/pause: Stop the currently playing song
 app.put('/spotify/pause', async (req, res) => {
