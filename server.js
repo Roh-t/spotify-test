@@ -8,10 +8,10 @@ dotenv.config();
 
 const app = express();
 app.use(cors({
-  origin: 'https://frontend-spotify-mu.vercel.app', // Allow your frontend domain
-  methods: ['GET', 'PUT'], // Allow the methods you're using
-  credentials: true // If needed for auth
+  origin: 'https://frontend-spotify-mu.vercel.app',
+  methods: ['GET', 'PUT']
 }));
+
 app.use(express.json());
 
 // Spotify API setup
