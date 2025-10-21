@@ -8,7 +8,9 @@ dotenv.config();
 
 const app = express();
 app.use(cors({
-    origin:"http://localhost:5173"
+  origin: 'https://frontend-spotify-mu.vercel.app', // Allow your frontend domain
+  methods: ['GET', 'PUT'], // Allow the methods you're using
+  credentials: true // If needed for auth
 }));
 app.use(express.json());
 
