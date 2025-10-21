@@ -7,7 +7,9 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin:"https://frontend-spotify-mu.vercel.app"
+}));
 app.use(express.json());
 
 // Spotify API setup
